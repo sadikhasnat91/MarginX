@@ -1,0 +1,1 @@
+ALTER TABLE products ADD COLUMN stock_quantity INTEGER DEFAULT 0;
