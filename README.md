@@ -80,13 +80,7 @@ Follow these steps to run the project locally on your machine.
    flutter run
    ```
 
-## 📸 Screenshots
 
-*(Replace with actual app screenshots)*
-
-| Dashboard | Profit Leaks | Analytics |
-| :---: | :---: | :---: |
-| <img src="https://via.placeholder.com/200x400.png?text=Dashboard" width="200"/> | <img src="https://via.placeholder.com/200x400.png?text=Profit+Leaks" width="200"/> | <img src="https://via.placeholder.com/200x400.png?text=Analytics" width="200"/> |
 
 ## 🤝 Contributing
 
