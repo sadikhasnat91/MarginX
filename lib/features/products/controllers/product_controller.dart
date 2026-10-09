@@ -81,7 +81,7 @@ class ProductController extends GetxController {
         'product_cost': productCost,
         'packaging_cost': packagingCost,
         'default_discount': defaultDiscount,
-        'stock_quantity': stockQuantity,
+        // 'stock_quantity': stockQuantity, // TODO: Add this column to Supabase!
         'is_active': true,
       };
 
@@ -159,7 +159,7 @@ class ProductController extends GetxController {
         'product_cost': productCost,
         'packaging_cost': packagingCost,
         'default_discount': defaultDiscount,
-        'stock_quantity': stockQuantity,
+        // 'stock_quantity': stockQuantity, // TODO: Add this column to Supabase!
       };
 
       final response = await _supabase

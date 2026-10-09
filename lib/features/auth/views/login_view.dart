@@ -36,91 +36,160 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
     
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Form(
-              key: _formKey,
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+            child: SizedBox(
+              width: size.width > 400 ? 400 : double.infinity,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(Icons.insights, size: 64, color: theme.colorScheme.primary),
+                  // Logo
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/images/logo.jpg',
+                      height: 80,
+                      width: 80,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                   const SizedBox(height: 24),
+                  
+                  // Text Area
                   Text(
-                    'Welcome back',
-                    style: theme.textTheme.headlineLarge,
+                    'Log in to your account',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.5,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Log in to access your business insights',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    'Welcome back! Please enter your details.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 48),
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email Address',
-                      prefixIcon: Icon(Icons.email_outlined),
+                  const SizedBox(height: 40),
+                  
+                  // Form
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Email',
+                          style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            hintText: 'Enter your email',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'Please enter email';
+                            if (!GetUtils.isEmail(value)) return 'Please enter a valid email';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        
+                        Text(
+                          'Password',
+                          style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 8),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            hintText: '••••••••',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return 'Please enter password';
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () {
+                              final email = _emailController.text.trim();
+                              if (email.isEmpty) {
+                                Get.snackbar('Email Required', 'Please enter your email address in the Email field first.', snackPosition: SnackPosition.BOTTOM);
+                                return;
+                              }
+                              _authController.resetPassword(email);
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: theme.colorScheme.primary,
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: const Text('Forgot password?', style: TextStyle(fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        
+                        SizedBox(
+                          height: 50,
+                          child: Obx(() => ElevatedButton(
+                            onPressed: _authController.isLoading.value ? null : _login,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.colorScheme.primary,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                            child: _authController.isLoading.value
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                  )
+                                : const Text(
+                                    'Sign In',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                          )),
+                        ),
+                        const SizedBox(height: 24),
+                        
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Don\'t have an account? ', style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.7))),
+                            TextButton(
+                              onPressed: () => Get.off(() => const SignupView()),
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: Text('Sign up', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.w600)),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Please enter email';
-                      if (!GetUtils.isEmail(value)) return 'Please enter a valid email';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock_outline),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Please enter password';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // TODO: Implement forgot password
-                      },
-                      child: Text('Forgot Password?', style: TextStyle(color: theme.colorScheme.primary)),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Obx(() => ElevatedButton(
-                    onPressed: _authController.isLoading.value ? null : _login,
-                    child: _authController.isLoading.value
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                          )
-                        : const Text('Log In'),
-                  )),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Don\'t have an account?', style: theme.textTheme.bodyMedium),
-                      TextButton(
-                        onPressed: () => Get.off(() => const SignupView()),
-                        child: Text('Sign Up', style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
                   ),
                 ],
               ),

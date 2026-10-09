@@ -33,8 +33,7 @@ class _SignupViewState extends State<SignupView> {
         _passwordController.text.trim(),
       );
       if (success) {
-        // Optionally redirect to login or show success dialog
-        Get.off(() => const LoginView());
+        // Navigation is handled by auth_controller routing to RootView
       }
     }
   }
@@ -54,7 +53,15 @@ class _SignupViewState extends State<SignupView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(Icons.rocket_launch, size: 64, color: theme.colorScheme.primary),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/images/logo.jpg',
+                      height: 80,
+                      width: 80,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     'Create an Account',

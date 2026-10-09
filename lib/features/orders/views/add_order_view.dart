@@ -4,6 +4,7 @@ import '../controllers/order_controller.dart';
 import '../../products/controllers/product_controller.dart';
 import '../../../data/models/product_model.dart';
 import '../../../data/models/order_model.dart';
+import '../../onboarding/controllers/business_controller.dart';
 
 class AddOrderView extends StatefulWidget {
   final OrderModel? order;
@@ -78,9 +79,10 @@ class _AddOrderViewState extends State<AddOrderView> {
           customerName: _customerNameController.text.trim(),
           phone: _phoneController.text.trim(),
           courier: _courierName,
+          status: _status,
           discount: double.tryParse(_discountController.text) ?? 0,
           courierCost: double.tryParse(_courierCostController.text) ?? 0,
-          isPaymentReceived: _isPaymentReceived,
+          // isPaymentReceived: _isPaymentReceived, // Causes DB error if column missing
         );
       }
 
@@ -169,13 +171,13 @@ class _AddOrderViewState extends State<AddOrderView> {
                           Column(
                             children: [
                               Text('Cost', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                              Text('৳${_selectedProduct!.productCost.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              Text('${Get.find<BusinessController>().currencySymbol}${_selectedProduct!.productCost.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                             ],
                           ),
                           Column(
                             children: [
                               Text('Price', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
-                              Text('৳${_selectedProduct!.sellingPrice.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                              Text('${Get.find<BusinessController>().currencySymbol}${_selectedProduct!.sellingPrice.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
                             ],
                           ),
                         ],
@@ -201,7 +203,7 @@ class _AddOrderViewState extends State<AddOrderView> {
                         decoration: const InputDecoration(labelText: 'Status'),
                         initialValue: _status,
                         items: _statuses.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-                        onChanged: widget.order != null ? null : (value) => setState(() => _status = value!),
+                        onChanged: (value) => setState(() => _status = value!),
                       ),
                     ),
                   ],
@@ -249,7 +251,7 @@ class _AddOrderViewState extends State<AddOrderView> {
                       child: TextFormField(
                         controller: _courierCostController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: const InputDecoration(labelText: 'Courier Cost', prefixText: '৳ '),
+                        decoration: InputDecoration(labelText: 'Courier Cost', prefixText: '${Get.find<BusinessController>().currencySymbol} '),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -257,7 +259,7 @@ class _AddOrderViewState extends State<AddOrderView> {
                       child: TextFormField(
                         controller: _discountController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: const InputDecoration(labelText: 'Discount Given', prefixText: '৳ '),
+                        decoration: InputDecoration(labelText: 'Discount Given', prefixText: '${Get.find<BusinessController>().currencySymbol} '),
                       ),
                     ),
                   ],

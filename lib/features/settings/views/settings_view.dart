@@ -24,8 +24,11 @@ class SettingsView extends StatelessWidget {
         final BusinessModel? business = businessController.currentBusiness.value;
         final user = authController.currentUser.value;
         
-        return ListView(
-          padding: const EdgeInsets.all(16.0),
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 800),
+            child: ListView(
+              padding: const EdgeInsets.all(16.0),
           children: [
             // User Profile Section
             Card(
@@ -132,15 +135,8 @@ class SettingsView extends StatelessWidget {
                     leading: const Icon(Icons.security_outlined),
                     title: const Text('Change Password'),
                     trailing: const Icon(Icons.chevron_right),
-                    onTap: () async {
-                      if (user?.email != null) {
-                        try {
-                          await Supabase.instance.client.auth.resetPasswordForEmail(user!.email!);
-                          Get.snackbar('Success', 'Password reset email sent!', backgroundColor: Colors.green, colorText: Colors.white);
-                        } catch (e) {
-                          Get.snackbar('Error', 'Could not send reset email.');
-                        }
-                      }
+                    onTap: () {
+                      _showChangePasswordDialog(context);
                     },
                   ),
                 ],
@@ -148,21 +144,78 @@ class SettingsView extends StatelessWidget {
             ),
             
             const SizedBox(height: 32),
-            ElevatedButton.icon(
-              onPressed: () {
-                authController.logout();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red.withValues(alpha: 0.1),
-                foregroundColor: Colors.red,
-                elevation: 0,
+              ElevatedButton.icon(
+                onPressed: () {
+                  authController.logout();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.error,
+                  foregroundColor: Colors.white,
+                  elevation: 2,
+                ),
+                icon: const Icon(Icons.logout),
+                label: const Text('Log Out'),
               ),
-              icon: const Icon(Icons.logout),
-              label: const Text('Log Out'),
+            ],
             ),
-          ],
+          ),
         );
       }),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final passwordController = TextEditingController();
+    bool isLoading = false;
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Change Password'),
+              content: TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'New Password',
+                  hintText: 'Enter new password',
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isLoading ? null : () async {
+                    if (passwordController.text.length < 6) {
+                      Get.snackbar('Error', 'Password must be at least 6 characters.');
+                      return;
+                    }
+                    setState(() => isLoading = true);
+                    try {
+                      await Supabase.instance.client.auth.updateUser(
+                        UserAttributes(password: passwordController.text),
+                      );
+                      Navigator.pop(context);
+                      Get.snackbar('Success', 'Password updated successfully!', backgroundColor: Colors.green, colorText: Colors.white);
+                    } catch (e) {
+                      Get.snackbar('Error', 'Failed to update password.');
+                    } finally {
+                      setState(() => isLoading = false);
+                    }
+                  },
+                  child: isLoading 
+                      ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                      : const Text('Save'),
+                ),
+              ],
+            );
+          }
+        );
+      },
     );
   }
 
@@ -173,6 +226,9 @@ class SettingsView extends StatelessWidget {
     final nameController = TextEditingController(text: business.name);
     final categoryController = TextEditingController(text: business.category ?? '');
     final logoController = TextEditingController(text: business.logoUrl ?? '');
+    String selectedCurrency = business.currency;
+
+    final List<String> currencies = ['BDT', 'USD', 'INR', 'EUR', 'GBP', 'PKR'];
 
     Get.defaultDialog(
       title: 'Edit Business Profile',
@@ -219,6 +275,15 @@ class SettingsView extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: 'Currency'),
+            value: selectedCurrency,
+            items: currencies.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+            onChanged: (val) {
+              if (val != null) selectedCurrency = val;
+            },
+          ),
         ],
       ),
       textConfirm: 'Save',
@@ -230,6 +295,7 @@ class SettingsView extends StatelessWidget {
           name: nameController.text.trim(),
           category: categoryController.text.trim(),
           logoUrl: logoController.text.trim(),
+          currency: selectedCurrency,
         );
       },
     );

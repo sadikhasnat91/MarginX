@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/product_controller.dart';
 
 import '../../../data/models/product_model.dart';
+import '../../onboarding/controllers/business_controller.dart';
 
 class AddProductView extends StatefulWidget {
   final ProductModel? product;
@@ -138,9 +139,9 @@ class _AddProductViewState extends State<AddProductView> {
                 TextFormField(
                   controller: _sellingPriceController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Selling Price *',
-                    prefixText: '৳ ',
+                    prefixText: '${Get.find<BusinessController>().currencySymbol} ',
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Required';
@@ -152,9 +153,9 @@ class _AddProductViewState extends State<AddProductView> {
                 TextFormField(
                   controller: _productCostController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Product Cost *',
-                    prefixText: '৳ ',
+                    prefixText: '${Get.find<BusinessController>().currencySymbol} ',
                     helperText: 'How much it costs you to buy/make',
                   ),
                   validator: (value) {
@@ -170,9 +171,9 @@ class _AddProductViewState extends State<AddProductView> {
                       child: TextFormField(
                         controller: _packagingCostController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Packaging Cost',
-                          prefixText: '৳ ',
+                          prefixText: '${Get.find<BusinessController>().currencySymbol} ',
                         ),
                       ),
                     ),
@@ -181,9 +182,9 @@ class _AddProductViewState extends State<AddProductView> {
                       child: TextFormField(
                         controller: _defaultDiscountController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: 'Default Discount',
-                          prefixText: '৳ ',
+                          prefixText: '${Get.find<BusinessController>().currencySymbol} ',
                         ),
                       ),
                     ),

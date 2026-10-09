@@ -40,7 +40,10 @@ class BusinessController extends GetxController {
 
   Future<void> checkAndLoadBusiness(String userId) async {
     try {
-      isCheckingBusiness.value = true;
+      // Only show full-screen loading if we don't have a business loaded yet
+      if (currentBusiness.value == null) {
+        isCheckingBusiness.value = true;
+      }
       final response = await _supabase
           .from('businesses')
           .select()
@@ -60,11 +63,25 @@ class BusinessController extends GetxController {
     }
   }
 
+  String get currencySymbol {
+    final currency = currentBusiness.value?.currency ?? 'BDT';
+    switch (currency) {
+      case 'USD': return '\$';
+      case 'INR': return '₹';
+      case 'EUR': return '€';
+      case 'GBP': return '£';
+      case 'PKR': return 'Rs';
+      case 'BDT':
+      default: return '৳';
+    }
+  }
+
   Future<void> createBusiness({
     required String name,
     String? category,
     String? monthlyOrderVolume,
     String? sellingChannel,
+    String currency = 'BDT',
   }) async {
     final user = Get.find<AuthController>().currentUser.value;
     if (user == null) return;
@@ -78,7 +95,7 @@ class BusinessController extends GetxController {
         'category': category,
         'monthly_order_volume': monthlyOrderVolume,
         'selling_channel': sellingChannel,
-        'currency': 'BDT',
+        'currency': currency,
       };
 
       final response = await _supabase
@@ -102,6 +119,7 @@ class BusinessController extends GetxController {
     required String name,
     String? category,
     String? logoUrl,
+    String? currency,
   }) async {
     final business = currentBusiness.value;
     if (business == null) return false;
@@ -114,6 +132,10 @@ class BusinessController extends GetxController {
         'category': category,
         'logo_url': logoUrl,
       };
+      
+      if (currency != null) {
+        businessData['currency'] = currency;
+      }
 
       final response = await _supabase
           .from('businesses')

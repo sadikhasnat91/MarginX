@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/product_controller.dart';
 import 'add_product_view.dart';
+import '../../onboarding/controllers/business_controller.dart';
 
 class ProductsView extends StatelessWidget {
   const ProductsView({super.key});
@@ -9,6 +10,7 @@ class ProductsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProductController productController = Get.put(ProductController());
+    final BusinessController businessController = Get.find<BusinessController>();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -44,15 +46,50 @@ class ProductsView extends StatelessWidget {
 
         return RefreshIndicator(
           onRefresh: productController.fetchProducts,
-          child: ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: productController.products.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final product = productController.products[index];
-              final margin = product.sellingPrice > 0
-                  ? ((product.sellingPrice - product.productCost - product.packagingCost) / product.sellingPrice) * 100
-                  : 0.0;
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth >= 800;
+
+              if (isDesktop) {
+                return GridView.builder(
+                  padding: const EdgeInsets.all(24),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: constraints.maxWidth >= 1200 ? 3 : 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    mainAxisExtent: 200,
+                  ),
+                  itemCount: productController.products.length,
+                  itemBuilder: (context, index) {
+                    return _buildProductCard(context, productController.products[index], productController, businessController, theme);
+                  },
+                );
+              }
+
+              return ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: productController.products.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  return _buildProductCard(context, productController.products[index], productController, businessController, theme);
+                },
+              );
+            }
+          ),
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Get.to(() => const AddProductView()),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildProductCard(BuildContext context, dynamic product, ProductController productController, BusinessController businessController, ThemeData theme) {
+    final margin = product.sellingPrice > 0
+        ? ((product.sellingPrice - product.productCost - product.packagingCost) / product.sellingPrice) * 100
+        : 0.0;
+
               
               return Card(
                 child: Padding(
@@ -80,15 +117,16 @@ class ProductsView extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 4),
-                            Row(
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 4,
                               children: [
                                 Text(
-                                  'Cost: ৳${product.productCost.toStringAsFixed(0)}',
+                                  'Cost: ${businessController.currencySymbol}${product.productCost.toStringAsFixed(0)}',
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                                   ),
                                 ),
-                                const SizedBox(width: 8),
                                 if (product.stockQuantity <= 10)
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
@@ -117,7 +155,7 @@ class ProductsView extends StatelessWidget {
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Text(
-                                  '৳${product.sellingPrice.toStringAsFixed(0)}',
+                                  '${businessController.currencySymbol}${product.sellingPrice.toStringAsFixed(0)}',
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -180,14 +218,5 @@ class ProductsView extends StatelessWidget {
                   ),
                 ),
               );
-            },
-          ),
-        );
-      }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.to(() => const AddProductView()),
-        child: const Icon(Icons.add),
-      ),
-    );
   }
 }

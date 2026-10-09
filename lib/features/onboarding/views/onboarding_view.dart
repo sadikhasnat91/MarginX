@@ -18,6 +18,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   String? _selectedCategory;
   String? _selectedOrderVolume;
   String? _selectedChannel;
+  String _selectedCurrency = 'BDT';
 
   final List<String> _categories = [
     'Fashion & Apparel',
@@ -46,6 +47,15 @@ class _OnboardingViewState extends State<OnboardingView> {
     'Other'
   ];
 
+  final List<String> _currencies = [
+    'BDT',
+    'USD',
+    'INR',
+    'EUR',
+    'GBP',
+    'PKR'
+  ];
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -60,6 +70,7 @@ class _OnboardingViewState extends State<OnboardingView> {
         category: _selectedCategory,
         monthlyOrderVolume: _selectedOrderVolume,
         sellingChannel: _selectedChannel,
+        currency: _selectedCurrency,
       );
     }
   }
@@ -79,7 +90,15 @@ class _OnboardingViewState extends State<OnboardingView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Icon(Icons.storefront, size: 64, color: theme.colorScheme.primary),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/images/logo.jpg',
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     'Welcome to MarginX',
@@ -149,6 +168,20 @@ class _OnboardingViewState extends State<OnboardingView> {
                       return DropdownMenuItem(value: channel, child: Text(channel));
                     }).toList(),
                     onChanged: (value) => setState(() => _selectedChannel = value),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Currency Dropdown
+                  DropdownButtonFormField<String>(
+                    decoration: const InputDecoration(
+                      labelText: 'Primary Currency',
+                      prefixIcon: Icon(Icons.attach_money),
+                    ),
+                    value: _selectedCurrency,
+                    items: _currencies.map((currency) {
+                      return DropdownMenuItem(value: currency, child: Text(currency));
+                    }).toList(),
+                    onChanged: (value) => setState(() => _selectedCurrency = value ?? 'BDT'),
                   ),
                   
                   const SizedBox(height: 32),

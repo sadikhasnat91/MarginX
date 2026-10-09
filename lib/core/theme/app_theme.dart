@@ -3,32 +3,32 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Brand Colors
-  static const Color primary = Color(0xFF0F172A); // Slate 900
-  static const Color primaryDark = Color(0xFF020617);
-  static const Color primaryLight = Color(0xFF334155);
-
-  static const Color accent = Color(0xFF3B82F6); // Blue 500
-  static const Color accentDark = Color(0xFF2563EB); // Blue 600
+  static const Color primary = Color(0xFF172554); // Deep Navy
+  static const Color primaryDark = Color(0xFF0F172A); // Darker Navy
+  static const Color primaryLight = Color(0xFF2563EB); // Blue Accent
+  static const Color accent = Color(0xFF7C3AED); // Informational accent (Purple)
 
   // Semantic Colors
-  static const Color success = Color(0xFF10B981); // Emerald 500
-  static const Color warning = Color(0xFFF59E0B); // Amber 500
-  static const Color error = Color(0xFFEF4444); // Red 500
-  static const Color info = Color(0xFF0EA5E9); // Sky 500
+  static const Color success = Color(0xFF059669); // Green
+  static const Color warning = Color(0xFFD97706); // Amber
+  static const Color error = Color(0xFFDC2626); // Red
+  static const Color info = Color(0xFF2563EB); // Blue
 
   // Background Colors
-  static const Color backgroundLight = Color(0xFFF8FAFC); // Slate 50
-  static const Color surfaceLight = Colors.white;
+  static const Color backgroundLight = Color(0xFFF6F8FC);
+  static const Color surfaceLight = Color(0xFFFFFFFF);
+  static const Color borderLight = Color(0xFFE5EAF2);
 
-  static const Color backgroundDark = Color(0xFF0F172A); // Slate 900
-  static const Color surfaceDark = Color(0xFF1E293B); // Slate 800
+  static const Color backgroundDark = Color(0xFF0B0F19);
+  static const Color surfaceDark = Color(0xFF111827);
+  static const Color borderDark = Color(0xFF1F2937);
 
   // Text Colors
-  static const Color textPrimaryLight = Color(0xFF0F172A);
+  static const Color textPrimaryLight = Color(0xFF111827);
   static const Color textSecondaryLight = Color(0xFF64748B);
 
-  static const Color textPrimaryDark = Color(0xFFF8FAFC);
-  static const Color textSecondaryDark = Color(0xFF94A3B8);
+  static const Color textPrimaryDark = Color(0xFFF9FAFB);
+  static const Color textSecondaryDark = Color(0xFF9CA3AF);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -42,6 +42,7 @@ class AppTheme {
         error: error,
       ),
       scaffoldBackgroundColor: backgroundLight,
+      dividerColor: borderLight,
       fontFamily: GoogleFonts.inter().fontFamily,
       textTheme: const TextTheme(
         displayLarge: TextStyle(color: textPrimaryLight, fontWeight: FontWeight.bold),
@@ -56,16 +57,16 @@ class AppTheme {
         labelLarge: TextStyle(color: textPrimaryLight, fontWeight: FontWeight.w600),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: surfaceLight,
+        backgroundColor: backgroundLight,
         foregroundColor: textPrimaryLight,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surfaceLight,
-        indicatorColor: primary.withValues(alpha: 0.1),
+        indicatorColor: backgroundLight,
         surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -83,10 +84,10 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: surfaceLight,
         surfaceTintColor: Colors.transparent,
-        elevation: 0,
+        elevation: 0, // No heavy shadow
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFFE2E8F0)),
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: borderLight),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -98,7 +99,7 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: primary,
           foregroundColor: Colors.white,
-          elevation: 0,
+          elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -130,7 +131,7 @@ class AppTheme {
         hintStyle: const TextStyle(color: textSecondaryLight),
       ),
       dividerTheme: const DividerThemeData(
-        color: Color(0xFFE2E8F0),
+        color: borderLight,
         thickness: 1,
         space: 1,
       ),
@@ -142,13 +143,14 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(
-        primary: Colors.white,
+        primary: primaryLight, // Medium blue looks better than white as primary in dark mode
         secondary: accent,
         surface: surfaceDark,
         onSurface: textPrimaryDark,
         error: error,
       ),
       scaffoldBackgroundColor: backgroundDark,
+      dividerColor: borderDark,
       fontFamily: GoogleFonts.inter().fontFamily,
       textTheme: const TextTheme(
         displayLarge: TextStyle(color: textPrimaryDark, fontWeight: FontWeight.bold),
@@ -163,16 +165,16 @@ class AppTheme {
         labelLarge: TextStyle(color: textPrimaryDark, fontWeight: FontWeight.w600),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: surfaceDark,
-        foregroundColor: textPrimaryDark,
+        backgroundColor: backgroundDark,
+        foregroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surfaceDark,
-        indicatorColor: primaryLight.withValues(alpha: 0.5),
+        indicatorColor: primaryLight.withValues(alpha: 0.2),
         surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
@@ -192,19 +194,19 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: Color(0xFF334155)),
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: borderDark),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: Colors.white,
-        foregroundColor: primaryDark,
+        backgroundColor: primaryLight,
+        foregroundColor: Colors.white,
         elevation: 2,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          foregroundColor: primary,
+          backgroundColor: primaryLight,
+          foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
@@ -237,7 +239,7 @@ class AppTheme {
         hintStyle: const TextStyle(color: textSecondaryDark),
       ),
       dividerTheme: const DividerThemeData(
-        color: Color(0xFF334155),
+        color: borderDark,
         thickness: 1,
         space: 1,
       ),

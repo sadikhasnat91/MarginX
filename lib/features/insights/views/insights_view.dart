@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/services/profit_calculation_service.dart';
+import '../../onboarding/controllers/business_controller.dart';
+import '../../../core/theme/app_theme.dart';
 
 class InsightsView extends StatelessWidget {
   const InsightsView({super.key});
@@ -9,6 +11,7 @@ class InsightsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProfitCalculationService profitService = Get.find<ProfitCalculationService>();
+    final BusinessController businessController = Get.find<BusinessController>();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -68,88 +71,109 @@ class InsightsView extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               
-              // Cost Breakdown Chart
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Where is your money going?', style: theme.textTheme.titleMedium),
-                      const SizedBox(height: 24),
-                      SizedBox(
-                        height: 200,
-                        child: PieChart(
-                          PieChartData(
-                            sectionsSpace: 2,
-                            centerSpaceRadius: 40,
-                            sections: [
-                              if (productCost > 0)
-                                PieChartSectionData(color: Colors.blue, value: productCost, title: 'Product', radius: 50, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
-                              if (courierCost > 0)
-                                PieChartSectionData(color: Colors.orange, value: courierCost, title: 'Courier', radius: 50, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
-                              if (returnLoss > 0)
-                                PieChartSectionData(color: Colors.red, value: returnLoss, title: 'Returns', radius: 60, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
-                              if (expenses > 0)
-                                PieChartSectionData(color: Colors.purple, value: expenses, title: 'Ads/Other', radius: 50, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
-                              if (profit > 0)
-                                PieChartSectionData(color: Colors.green, value: profit, title: 'Profit', radius: 55, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      // Legend
-                      _buildLegend(context, 'Product Cost', Colors.blue, productCost),
-                      _buildLegend(context, 'Courier Cost', Colors.orange, courierCost),
-                      _buildLegend(context, 'Return Losses', Colors.red, returnLoss),
-                      _buildLegend(context, 'Expenses (Ads, etc.)', Colors.purple, expenses),
-                      const Divider(),
-                      _buildLegend(context, 'Real Profit', Colors.green, profit),
-                    ],
-                  ),
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Order Performance
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Order Performance', style: theme.textTheme.titleMedium),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isDesktop = constraints.maxWidth >= 800;
+
+                  final costBreakdownCard = Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildOrderStat('Total', profitService.totalOrdersCount.value, Colors.grey),
-                          _buildOrderStat('Delivered', profitService.deliveredOrdersCount.value, Colors.green),
-                          _buildOrderStat('Returned', profitService.returnedOrdersCount.value, Colors.red),
+                          Text('Where is your money going?', style: theme.textTheme.titleMedium),
+                          const SizedBox(height: 24),
+                          SizedBox(
+                            height: 200,
+                            child: PieChart(
+                              PieChartData(
+                                sectionsSpace: 2,
+                                centerSpaceRadius: 40,
+                                sections: [
+                                  if (productCost > 0)
+                                    PieChartSectionData(color: Colors.blue, value: productCost, title: 'Product', radius: 50, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
+                                  if (courierCost > 0)
+                                    PieChartSectionData(color: Colors.orange, value: courierCost, title: 'Courier', radius: 50, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
+                                  if (returnLoss > 0)
+                                    PieChartSectionData(color: Colors.red, value: returnLoss, title: 'Returns', radius: 60, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
+                                  if (expenses > 0)
+                                    PieChartSectionData(color: Colors.purple, value: expenses, title: 'Ads/Other', radius: 50, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
+                                  if (profit > 0)
+                                    PieChartSectionData(color: AppTheme.success, value: profit, title: 'Profit', radius: 55, titleStyle: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          // Legend
+                          _buildLegend(context, 'Product Cost', Colors.blue, productCost),
+                          _buildLegend(context, 'Courier Cost', Colors.orange, courierCost),
+                          _buildLegend(context, 'Return Losses', Colors.red, returnLoss),
+                          _buildLegend(context, 'Expenses (Ads, etc.)', Colors.purple, expenses),
+                          const Divider(),
+                          _buildLegend(context, 'Real Profit', AppTheme.success, profit),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      if (profitService.totalOrdersCount.value > 0)
-                        LinearProgressIndicator(
-                          value: profitService.deliveredOrdersCount.value / profitService.totalOrdersCount.value,
-                          backgroundColor: Colors.red.withValues(alpha: 0.2),
-                          color: Colors.green,
-                          minHeight: 8,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      const SizedBox(height: 8),
-                      if (profitService.totalOrdersCount.value > 0)
-                        Center(
-                          child: Text(
-                            'Delivery Success Rate: ${((profitService.deliveredOrdersCount.value / profitService.totalOrdersCount.value) * 100).toStringAsFixed(1)}%',
-                            style: theme.textTheme.bodySmall,
+                    ),
+                  );
+
+                  final orderPerformanceCard = Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Order Performance', style: theme.textTheme.titleMedium),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _buildOrderStat(context, 'Total', profitService.totalOrdersCount.value, Colors.grey),
+                              _buildOrderStat(context, 'Delivered', profitService.deliveredOrdersCount.value, AppTheme.success),
+                              _buildOrderStat(context, 'Returned', profitService.returnedOrdersCount.value, theme.colorScheme.error),
+                            ],
                           ),
-                        ),
+                          const SizedBox(height: 16),
+                          if (profitService.totalOrdersCount.value > 0)
+                            LinearProgressIndicator(
+                              value: profitService.deliveredOrdersCount.value / profitService.totalOrdersCount.value,
+                              backgroundColor: theme.colorScheme.error.withValues(alpha: 0.2),
+                              color: AppTheme.success,
+                              minHeight: 8,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          const SizedBox(height: 8),
+                          if (profitService.totalOrdersCount.value > 0)
+                            Center(
+                              child: Text(
+                                'Delivery Success Rate: ${((profitService.deliveredOrdersCount.value / profitService.totalOrdersCount.value) * 100).toStringAsFixed(1)}%',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+
+                  if (isDesktop) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: costBreakdownCard),
+                        const SizedBox(width: 24),
+                        Expanded(child: orderPerformanceCard),
+                      ],
+                    );
+                  }
+
+                  return Column(
+                    children: [
+                      costBreakdownCard,
+                      const SizedBox(height: 24),
+                      orderPerformanceCard,
                     ],
-                  ),
-                ),
+                  );
+                }
               ),
             ],
           ),
@@ -192,17 +216,17 @@ class InsightsView extends StatelessWidget {
               Text(label, style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
-          Text('৳${amount.toStringAsFixed(0)}', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
+          Text('${Get.find<BusinessController>().currencySymbol}${amount.toStringAsFixed(0)}', style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
 
-  Widget _buildOrderStat(String label, int count, Color color) {
+  Widget _buildOrderStat(BuildContext context, String label, int count, Color color) {
     return Column(
       children: [
         Text(count.toString(), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color)),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+        Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
       ],
     );
   }

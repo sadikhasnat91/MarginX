@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
+import '../../../main.dart';
 
 class AuthController extends GetxController {
   static AuthController get instance => Get.find();
@@ -25,6 +26,7 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       await _supabase.auth.signInWithPassword(email: email, password: password);
+      Get.offAll(() => const RootView());
       return true;
     } on AuthException catch (e) {
       Get.snackbar('Error', e.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
@@ -40,8 +42,13 @@ class AuthController extends GetxController {
   Future<bool> signUp(String email, String password) async {
     try {
       isLoading.value = true;
-      await _supabase.auth.signUp(email: email, password: password);
-      Get.snackbar('Success', 'Account created! Please check your email to verify.', backgroundColor: Colors.green, colorText: Colors.white);
+      final response = await _supabase.auth.signUp(email: email, password: password);
+      if (response.session != null) {
+        Get.snackbar('Success', 'Account created and logged in!', backgroundColor: Colors.green, colorText: Colors.white);
+      } else {
+        Get.snackbar('Success', 'Account created! Please check your email to verify.', backgroundColor: Colors.green, colorText: Colors.white);
+      }
+      Get.offAll(() => const RootView());
       return true;
     } on AuthException catch (e) {
       Get.snackbar('Error', e.message, backgroundColor: Colors.redAccent, colorText: Colors.white);
@@ -58,6 +65,7 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       await _supabase.auth.signOut();
+      Get.offAll(() => const RootView());
     } catch (e) {
       Get.snackbar('Error', 'Failed to log out.', backgroundColor: Colors.redAccent, colorText: Colors.white);
     } finally {

@@ -16,6 +16,7 @@ class ProfitCalculationService extends GetxService {
   final RxInt totalOrdersCount = 0.obs;
   final RxInt deliveredOrdersCount = 0.obs;
   final RxInt returnedOrdersCount = 0.obs;
+  final RxInt cancelledOrdersCount = 0.obs;
   
   final RxDouble totalReturnLoss = 0.0.obs;
   final RxDouble totalExpenses = 0.0.obs;
@@ -85,14 +86,15 @@ class ProfitCalculationService extends GetxService {
     int total = 0;
     int delivered = 0;
     int returned = 0;
+    int cancelled = 0;
 
     for (var order in orders) {
       if (startDate != null && order.orderDate != null && order.orderDate!.isBefore(startDate)) continue;
       if (endDate != null && order.orderDate != null && order.orderDate!.isAfter(endDate)) continue;
 
       total++;
-      if (order.status == 'Delivered') {
-        delivered++;
+      if (order.status != 'Cancelled' && order.status != 'Returned' && order.status != 'RTO') {
+        if (order.status == 'Delivered') delivered++;
         rev += (order.sellingPrice - order.discount);
         prodCost += order.productCost;
         courCost += order.courierCost;
@@ -106,7 +108,8 @@ class ProfitCalculationService extends GetxService {
       } else if (order.status == 'Returned' || order.status == 'RTO') {
         returned++;
         returnCost += order.courierCost + order.returnCost + order.packagingCost; 
-        // For returned items, you typically lose the courier cost both ways + packaging. Product is returned to inventory.
+      } else if (order.status == 'Cancelled') {
+        cancelled++;
       }
     }
 
@@ -136,5 +139,6 @@ class ProfitCalculationService extends GetxService {
     totalOrdersCount.value = total;
     deliveredOrdersCount.value = delivered;
     returnedOrdersCount.value = returned;
+    cancelledOrdersCount.value = cancelled;
   }
 }

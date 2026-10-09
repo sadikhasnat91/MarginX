@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/expense_controller.dart';
 import 'add_expense_view.dart';
 import 'package:intl/intl.dart';
+import '../../onboarding/controllers/business_controller.dart';
 
 class ExpensesView extends StatelessWidget {
   const ExpensesView({super.key});
@@ -10,6 +11,7 @@ class ExpensesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ExpenseController expenseController = Get.put(ExpenseController());
+    final BusinessController businessController = Get.find<BusinessController>();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -45,12 +47,47 @@ class ExpensesView extends StatelessWidget {
 
         return RefreshIndicator(
           onRefresh: expenseController.fetchExpenses,
-          child: ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: expenseController.expenses.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final expense = expenseController.expenses[index];
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth >= 800;
+
+              if (isDesktop) {
+                return GridView.builder(
+                  padding: const EdgeInsets.all(24),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: constraints.maxWidth >= 1200 ? 3 : 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    mainAxisExtent: 120,
+                  ),
+                  itemCount: expenseController.expenses.length,
+                  itemBuilder: (context, index) {
+                    return _buildExpenseCard(context, expenseController.expenses[index], expenseController, businessController, theme);
+                  },
+                );
+              }
+
+              return ListView.separated(
+                padding: const EdgeInsets.all(16),
+                itemCount: expenseController.expenses.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                itemBuilder: (context, index) {
+                  return _buildExpenseCard(context, expenseController.expenses[index], expenseController, businessController, theme);
+                },
+              );
+            }
+          ),
+        );
+      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Get.to(() => const AddExpenseView()),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildExpenseCard(BuildContext context, dynamic expense, ExpenseController expenseController, BusinessController businessController, ThemeData theme) {
+
 
               IconData categoryIcon = Icons.money;
               if (expense.category == 'Advertising') categoryIcon = Icons.campaign_outlined;
@@ -78,7 +115,7 @@ class ExpensesView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '৳${expense.amount.toStringAsFixed(0)}',
+                        '${businessController.currencySymbol}${expense.amount.toStringAsFixed(0)}',
                         style: theme.textTheme.titleMedium?.copyWith(
                           color: theme.colorScheme.error,
                           fontWeight: FontWeight.bold,
@@ -117,14 +154,5 @@ class ExpensesView extends StatelessWidget {
                   isThreeLine: expense.description != null && expense.description!.isNotEmpty,
                 ),
               );
-            },
-          ),
-        );
-      }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.to(() => const AddExpenseView()),
-        child: const Icon(Icons.add),
-      ),
-    );
   }
 }

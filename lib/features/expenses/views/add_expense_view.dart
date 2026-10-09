@@ -4,6 +4,7 @@ import '../controllers/expense_controller.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/models/expense_model.dart';
+import '../../onboarding/controllers/business_controller.dart';
 
 class AddExpenseView extends StatefulWidget {
   final ExpenseModel? expense;
@@ -118,7 +119,7 @@ class _AddExpenseViewState extends State<AddExpenseView> {
                 TextFormField(
                   controller: _amountController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: 'Amount *', prefixText: '৳ '),
+                  decoration: InputDecoration(labelText: 'Amount *', prefixText: '${Get.find<BusinessController>().currencySymbol} '),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Required';
                     if (double.tryParse(value) == null) return 'Invalid amount';

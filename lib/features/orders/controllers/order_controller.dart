@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../data/models/order_model.dart';
 import '../../../data/models/product_model.dart';
 import '../../onboarding/controllers/business_controller.dart';
+import '../../products/controllers/product_controller.dart';
 
 class OrderController extends GetxController {
   static OrderController get instance => Get.find();
@@ -82,7 +83,7 @@ class OrderController extends GetxController {
         'payment_fee': 0.0, // Should be calculated if COD
         'return_cost': 0.0,
         'other_cost': 0.0,
-        'is_payment_received': isPaymentReceived,
+        // 'is_payment_received': isPaymentReceived, // TODO: Add this column to DB
         'order_date': DateTime.now().toIso8601String(),
       };
 
@@ -102,6 +103,16 @@ class OrderController extends GetxController {
         'unit_price': product.sellingPrice,
       });
 
+      // Update product stock
+      await _supabase.from('products').update({
+        'stock_quantity': product.stockQuantity - quantity,
+      }).eq('id', product.id);
+
+      // Refresh product list in UI
+      if (Get.isRegistered<ProductController>()) {
+        Get.find<ProductController>().fetchProducts();
+      }
+
       orders.insert(0, newOrder);
       
       Get.snackbar('Success', 'Order added successfully!', backgroundColor: Colors.green, colorText: Colors.white);
@@ -119,10 +130,11 @@ class OrderController extends GetxController {
     try {
       final newStatus = !order.isPaymentReceived;
       
-      await _supabase
-          .from('orders')
-          .update({'is_payment_received': newStatus})
-          .eq('id', order.id);
+      // TODO: Uncomment when is_payment_received column is added to DB
+      // await _supabase
+      //     .from('orders')
+      //     .update({'is_payment_received': newStatus})
+      //     .eq('id', order.id);
 
       final index = orders.indexWhere((o) => o.id == order.id);
       if (index != -1) {
@@ -190,6 +202,7 @@ class OrderController extends GetxController {
     required String customerName,
     required String phone,
     required String courier,
+    required String status,
     required double discount,
     required double courierCost,
     bool? isPaymentReceived,
@@ -201,13 +214,14 @@ class OrderController extends GetxController {
         'customer_name': customerName,
         'phone': phone,
         'courier': courier,
+        'status': status,
         'discount': discount,
         'courier_cost': courierCost,
       };
 
-      if (isPaymentReceived != null) {
-        orderData['is_payment_received'] = isPaymentReceived;
-      }
+      // if (isPaymentReceived != null) {
+      //   orderData['is_payment_received'] = isPaymentReceived;
+      // }
 
       final response = await _supabase
           .from('orders')
