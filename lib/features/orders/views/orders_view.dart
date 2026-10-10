@@ -122,8 +122,17 @@ class OrdersView extends StatelessWidget {
               return Container(
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: theme.dividerColor),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: theme.brightness == Brightness.light ? const Color(0xFFE2E8F0) : theme.dividerColor,
+                  ),
+                  boxShadow: theme.brightness == Brightness.light ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ] : null,
                 ),
                 child: Column(
                   children: [
@@ -404,17 +413,52 @@ class OrdersView extends StatelessWidget {
                                 ),
                                 icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
                                 onPressed: () {
-                                  Get.defaultDialog(
-                                    title: 'Delete Order',
-                                    middleText: 'Are you sure?',
-                                    textConfirm: 'Delete',
-                                    textCancel: 'Cancel',
-                                    confirmTextColor: Colors.white,
-                                    buttonColor: Colors.red,
-                                    onConfirm: () {
-                                      Get.back();
-                                      orderController.deleteOrder(order.id);
-                                    },
+                                  Get.dialog(
+                                    AlertDialog(
+                                      title: Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red.withValues(alpha: 0.1),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: const Icon(Icons.delete_outline, color: Colors.red, size: 24),
+                                          ),
+                                          const SizedBox(width: 12),
+                                          const Text('Delete Order'),
+                                        ],
+                                      ),
+                                      content: const Text(
+                                        'Are you sure you want to delete this order?\nThis action cannot be undone.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          style: TextButton.styleFrom(
+                                            backgroundColor: theme.brightness == Brightness.light ? const Color(0xFFF1F5F9) : Colors.white10,
+                                            foregroundColor: theme.brightness == Brightness.light ? const Color(0xFF475569) : Colors.white70,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              side: theme.brightness == Brightness.light ? const BorderSide(color: Color(0xFFE2E8F0)) : BorderSide.none,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                          ),
+                                          onPressed: () => Get.back(),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                            foregroundColor: Colors.white,
+                                          ),
+                                          onPressed: () {
+                                            Get.back();
+                                            orderController.deleteOrder(order.id);
+                                          },
+                                          child: const Text('Delete'),
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 },
                               ),

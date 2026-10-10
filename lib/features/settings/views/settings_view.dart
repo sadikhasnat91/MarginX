@@ -126,8 +126,18 @@ class SettingsView extends StatelessWidget {
                     subtitle: Text(Get.isDarkMode ? 'Dark Mode' : 'Light Mode'),
                     trailing: const Icon(Icons.sync),
                     onTap: () {
-                      Get.changeThemeMode(Get.isDarkMode ? ThemeMode.light : ThemeMode.dark);
-                      Get.snackbar('Theme Changed', 'Applied ${Get.isDarkMode ? "Light" : "Dark"} Mode.', snackPosition: SnackPosition.BOTTOM);
+                      final isDark = Theme.of(context).brightness == Brightness.dark;
+                      final newMode = isDark ? ThemeMode.light : ThemeMode.dark;
+                      Get.changeThemeMode(newMode);
+                      Get.snackbar(
+                        'Theme Changed', 
+                        'Switched to ${newMode == ThemeMode.light ? "Light" : "Dark"} Mode.', 
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: const Color(0xFF1E293B),
+                        colorText: Colors.white,
+                        margin: const EdgeInsets.all(16),
+                        borderRadius: 12,
+                      );
                     },
                   ),
                   const Divider(height: 1),
@@ -185,6 +195,15 @@ class SettingsView extends StatelessWidget {
               ),
               actions: [
                 TextButton(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Theme.of(context).brightness == Brightness.light ? const Color(0xFFF1F5F9) : Colors.white10,
+                    foregroundColor: Theme.of(context).brightness == Brightness.light ? const Color(0xFF475569) : Colors.white70,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: Theme.of(context).brightness == Brightness.light ? const BorderSide(color: Color(0xFFE2E8F0)) : BorderSide.none,
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  ),
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Cancel'),
                 ),
@@ -230,74 +249,96 @@ class SettingsView extends StatelessWidget {
 
     final List<String> currencies = ['BDT', 'USD', 'INR', 'EUR', 'GBP', 'PKR'];
 
-    Get.defaultDialog(
-      title: 'Edit Business Profile',
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: nameController,
-            decoration: const InputDecoration(labelText: 'Business Name'),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: categoryController,
-            decoration: const InputDecoration(labelText: 'Category'),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: logoController,
-                  decoration: const InputDecoration(labelText: 'Profile Image URL (Or Upload)'),
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Edit Business Profile'),
+        content: SizedBox(
+          width: 400,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Business Name'),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.photo_library),
-                color: Theme.of(context).colorScheme.primary,
-                tooltip: 'Pick from Gallery',
-                onPressed: () async {
-                  final picker = ImagePicker();
-                  final XFile? image = await picker.pickImage(
-                    source: ImageSource.gallery,
-                    maxWidth: 512,
-                    maxHeight: 512,
-                    imageQuality: 50,
-                  );
-                  if (image != null) {
-                    final bytes = await image.readAsBytes();
-                    final base64Image = base64Encode(bytes);
-                    final mimeType = image.mimeType ?? 'image/jpeg';
-                    logoController.text = 'data:$mimeType;base64,$base64Image';
-                  }
-                },
-              ),
-            ],
+                const SizedBox(height: 12),
+                TextField(
+                  controller: categoryController,
+                  decoration: const InputDecoration(labelText: 'Category'),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: logoController,
+                        decoration: const InputDecoration(labelText: 'Profile Image URL (Or Upload)'),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.photo_library),
+                      color: Theme.of(context).colorScheme.primary,
+                      tooltip: 'Pick from Gallery',
+                      onPressed: () async {
+                        final picker = ImagePicker();
+                        final XFile? image = await picker.pickImage(
+                          source: ImageSource.gallery,
+                          maxWidth: 512,
+                          maxHeight: 512,
+                          imageQuality: 50,
+                        );
+                        if (image != null) {
+                          final bytes = await image.readAsBytes();
+                          final base64Image = base64Encode(bytes);
+                          final mimeType = image.mimeType ?? 'image/jpeg';
+                          logoController.text = 'data:$mimeType;base64,$base64Image';
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  decoration: const InputDecoration(labelText: 'Currency'),
+                  value: selectedCurrency,
+                  items: currencies.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+                  onChanged: (val) {
+                    if (val != null) selectedCurrency = val;
+                  },
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            decoration: const InputDecoration(labelText: 'Currency'),
-            value: selectedCurrency,
-            items: currencies.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
-            onChanged: (val) {
-              if (val != null) selectedCurrency = val;
+        ),
+        actions: [
+          TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: Theme.of(context).brightness == Brightness.light ? const Color(0xFFF1F5F9) : Colors.white10,
+              foregroundColor: Theme.of(context).brightness == Brightness.light ? const Color(0xFF475569) : Colors.white70,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: Theme.of(context).brightness == Brightness.light ? const BorderSide(color: Color(0xFFE2E8F0)) : BorderSide.none,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            ),
+            onPressed: () => Get.back(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Get.back();
+              await controller.updateBusiness(
+                name: nameController.text.trim(),
+                category: categoryController.text.trim(),
+                logoUrl: logoController.text.trim(),
+                currency: selectedCurrency,
+              );
             },
+            child: const Text('Save'),
           ),
         ],
       ),
-      textConfirm: 'Save',
-      textCancel: 'Cancel',
-      confirmTextColor: Colors.white,
-      onConfirm: () async {
-        Get.back();
-        await controller.updateBusiness(
-          name: nameController.text.trim(),
-          category: categoryController.text.trim(),
-          logoUrl: logoController.text.trim(),
-          currency: selectedCurrency,
-        );
-      },
     );
   }
 }

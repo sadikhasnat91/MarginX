@@ -15,9 +15,9 @@ class AppTheme {
   static const Color info = Color(0xFF2563EB); // Blue
 
   // Background Colors
-  static const Color backgroundLight = Color(0xFFF6F8FC);
+  static const Color backgroundLight = Color(0xFFEAEEF4);
   static const Color surfaceLight = Color(0xFFFFFFFF);
-  static const Color borderLight = Color(0xFFE5EAF2);
+  static const Color borderLight = Color(0xFFD8DEE6);
 
   static const Color backgroundDark = Color(0xFF0B0F19);
   static const Color surfaceDark = Color(0xFF111827);
@@ -42,6 +42,7 @@ class AppTheme {
         error: error,
       ),
       scaffoldBackgroundColor: backgroundLight,
+      dialogBackgroundColor: surfaceLight,
       dividerColor: borderLight,
       fontFamily: GoogleFonts.inter().fontFamily,
       textTheme: const TextTheme(
@@ -66,17 +67,17 @@ class AppTheme {
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surfaceLight,
-        indicatorColor: backgroundLight,
+        indicatorColor: const Color(0xFFE0E7FF),
         surfaceTintColor: Colors.transparent,
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const TextStyle(color: primary, fontWeight: FontWeight.bold, fontSize: 12);
+            return const TextStyle(color: primaryLight, fontWeight: FontWeight.bold, fontSize: 12);
           }
           return const TextStyle(color: textSecondaryLight, fontWeight: FontWeight.normal, fontSize: 12);
         }),
         iconTheme: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const IconThemeData(color: primary);
+            return const IconThemeData(color: primaryLight);
           }
           return const IconThemeData(color: textSecondaryLight);
         }),
@@ -84,11 +85,37 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: surfaceLight,
         surfaceTintColor: Colors.transparent,
-        elevation: 0, // No heavy shadow
+        elevation: 2,
+        shadowColor: const Color(0x18000000),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: borderLight),
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: borderLight, width: 1.2),
         ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surfaceLight,
+        surfaceTintColor: Colors.transparent,
+        elevation: 12,
+        shadowColor: const Color(0x33000000),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: borderLight, width: 1.5),
+        ),
+        titleTextStyle: GoogleFonts.inter(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: textPrimaryLight,
+        ),
+        contentTextStyle: GoogleFonts.inter(
+          fontSize: 14,
+          color: textSecondaryLight,
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: const Color(0xFF1E293B),
+        contentTextStyle: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        behavior: SnackBarBehavior.floating,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primary,
@@ -109,7 +136,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceLight,
+        fillColor: const Color(0xFFF1F5F9),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -121,7 +148,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: accent, width: 2),
+          borderSide: const BorderSide(color: primaryLight, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -143,13 +170,14 @@ class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(
-        primary: primaryLight, // Medium blue looks better than white as primary in dark mode
+        primary: primaryLight,
         secondary: accent,
         surface: surfaceDark,
         onSurface: textPrimaryDark,
         error: error,
       ),
       scaffoldBackgroundColor: backgroundDark,
+      dialogBackgroundColor: surfaceDark,
       dividerColor: borderDark,
       fontFamily: GoogleFonts.inter().fontFamily,
       textTheme: const TextTheme(
@@ -194,9 +222,34 @@ class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: borderDark),
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: borderDark, width: 1),
         ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: surfaceDark,
+        surfaceTintColor: Colors.transparent,
+        elevation: 12,
+        shadowColor: Colors.black.withOpacity(0.5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: borderDark, width: 1.5),
+        ),
+        titleTextStyle: GoogleFonts.inter(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: textPrimaryDark,
+        ),
+        contentTextStyle: GoogleFonts.inter(
+          fontSize: 14,
+          color: textSecondaryDark,
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: const Color(0xFF334155),
+        contentTextStyle: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        behavior: SnackBarBehavior.floating,
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryLight,

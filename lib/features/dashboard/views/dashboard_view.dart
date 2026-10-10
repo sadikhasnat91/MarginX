@@ -53,21 +53,32 @@ class _DashboardViewState extends State<DashboardView> {
                   _currentIndex = index;
                 });
               },
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: Theme.of(context).brightness == Brightness.light
+                  ? const Color(0xFFF8FAFC)
+                  : Theme.of(context).colorScheme.surface,
               leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        'assets/images/logo.jpg',
-                        width: isWideDesktop ? 180 : 56,
-                        fit: BoxFit.contain,
+                padding: const EdgeInsets.symmetric(vertical: 24.0, horizontal: 12.0),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0F172A),
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/images/logo.jpg',
+                      width: isWideDesktop ? 160 : 44,
+                      fit: BoxFit.contain,
                     ),
-                  ],
+                  ),
                 ),
               ),
               destinations: const [
@@ -78,7 +89,11 @@ class _DashboardViewState extends State<DashboardView> {
                 NavigationRailDestination(icon: Icon(Icons.insights_outlined), selectedIcon: Icon(Icons.insights), label: Text('Insights')),
               ],
             ),
-            const VerticalDivider(thickness: 1, width: 1),
+            VerticalDivider(
+              thickness: 1, 
+              width: 1, 
+              color: Theme.of(context).brightness == Brightness.light ? const Color(0xFFD8DEE6) : Theme.of(context).dividerColor,
+            ),
             Expanded(
               child: IndexedStack(
                 index: _currentIndex,
@@ -198,9 +213,15 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.secondary.withValues(alpha: 0.1),
+                color: theme.brightness == Brightness.light
+                    ? const Color(0xFFF1F5F9)
+                    : theme.colorScheme.secondary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.2)),
+                border: Border.all(
+                  color: theme.brightness == Brightness.light
+                      ? const Color(0xFFE2E8F0)
+                      : theme.colorScheme.secondary.withValues(alpha: 0.2),
+                ),
               ),
               child: DropdownButtonHideUnderline(
                 child: Obx(() => DropdownButton<String>(
@@ -259,16 +280,23 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
                 // Profit Card (Premium Tinted Design with Breakdown)
                 Container(
                   decoration: BoxDecoration(
-                    color: profit >= 0 
-                        ? const Color(0xFF059669).withValues(alpha: 0.15) 
-                        : const Color(0xFFDC2626).withValues(alpha: 0.15),
+                    color: theme.brightness == Brightness.light
+                        ? (profit >= 0 ? const Color(0xFFF0FDF4) : const Color(0xFFFEF2F2))
+                        : (profit >= 0 ? const Color(0xFF059669).withValues(alpha: 0.15) : const Color(0xFFDC2626).withValues(alpha: 0.15)),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                      color: profit >= 0 
-                          ? const Color(0xFF059669).withValues(alpha: 0.3) 
-                          : const Color(0xFFDC2626).withValues(alpha: 0.3),
+                      color: theme.brightness == Brightness.light
+                          ? (profit >= 0 ? const Color(0xFFBBF7D0) : const Color(0xFFFECACA))
+                          : (profit >= 0 ? const Color(0xFF059669).withValues(alpha: 0.3) : const Color(0xFFDC2626).withValues(alpha: 0.3)),
                       width: 1.5,
                     ),
+                    boxShadow: theme.brightness == Brightness.light ? [
+                      BoxShadow(
+                        color: (profit >= 0 ? const Color(0xFF059669) : const Color(0xFFDC2626)).withOpacity(0.06),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                      ),
+                    ] : null,
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(24.0),
@@ -281,7 +309,9 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
                             Text(
                               'NET PROFIT',
                               style: TextStyle(
-                                color: profit >= 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444),
+                                color: theme.brightness == Brightness.light
+                                    ? (profit >= 0 ? const Color(0xFF15803D) : const Color(0xFFDC2626))
+                                    : (profit >= 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444)),
                                 letterSpacing: 1.2,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
@@ -290,9 +320,9 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: profit >= 0 
-                                    ? const Color(0xFF059669).withValues(alpha: 0.2) 
-                                    : const Color(0xFFDC2626).withValues(alpha: 0.2),
+                                color: theme.brightness == Brightness.light
+                                    ? (profit >= 0 ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2))
+                                    : (profit >= 0 ? const Color(0xFF059669).withValues(alpha: 0.2) : const Color(0xFFDC2626).withValues(alpha: 0.2)),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -300,13 +330,17 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
                                   Icon(
                                     margin >= 0 ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded, 
                                     size: 14, 
-                                    color: profit >= 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444)
+                                    color: theme.brightness == Brightness.light
+                                        ? (profit >= 0 ? const Color(0xFF15803D) : const Color(0xFFDC2626))
+                                        : (profit >= 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444)),
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${margin.abs().toStringAsFixed(1)}%',
                                     style: TextStyle(
-                                      color: profit >= 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444),
+                                      color: theme.brightness == Brightness.light
+                                          ? (profit >= 0 ? const Color(0xFF15803D) : const Color(0xFFDC2626))
+                                          : (profit >= 0 ? const Color(0xFF10B981) : const Color(0xFFEF4444)),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12,
                                     ),
@@ -323,7 +357,9 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
                           child: Text(
                             '${profit >= 0 ? "" : "-"}${businessController.currencySymbol}${profit.abs().toStringAsFixed(0)}',
                             style: TextStyle(
-                              color: profit >= 0 ? const Color(0xFF34D399) : const Color(0xFFF87171),
+                              color: theme.brightness == Brightness.light
+                                  ? (profit >= 0 ? const Color(0xFF15803D) : const Color(0xFFB91C1C))
+                                  : (profit >= 0 ? const Color(0xFF34D399) : const Color(0xFFF87171)),
                               fontWeight: FontWeight.w900,
                               fontSize: 48,
                               height: 1.1,
@@ -336,24 +372,37 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.surface.withValues(alpha: 0.5),
+                            color: theme.brightness == Brightness.light
+                                ? Colors.white
+                                : theme.colorScheme.surface.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: theme.colorScheme.onSurface.withValues(alpha: 0.05)),
+                            border: Border.all(
+                              color: theme.brightness == Brightness.light
+                                  ? (profit >= 0 ? const Color(0xFFBBF7D0) : const Color(0xFFFECACA))
+                                  : theme.colorScheme.onSurface.withValues(alpha: 0.05),
+                            ),
+                            boxShadow: theme.brightness == Brightness.light ? [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.04),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ] : null,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               Column(
                                 children: [
-                                  Text('Total Sales', style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                                  Text('Total Sales', style: TextStyle(color: theme.brightness == Brightness.light ? const Color(0xFF64748B) : theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
                                   const SizedBox(height: 4),
                                   Text('${businessController.currencySymbol}${revenue.toStringAsFixed(0)}', style: TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 16)),
                                 ],
                               ),
-                              Container(height: 30, width: 1, color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
+                              Container(height: 30, width: 1, color: theme.brightness == Brightness.light ? const Color(0xFFE2E8F0) : theme.colorScheme.onSurface.withValues(alpha: 0.1)),
                               Column(
                                 children: [
-                                  Text('Total Costs', style: TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
+                                  Text('Total Costs', style: TextStyle(color: theme.brightness == Brightness.light ? const Color(0xFF64748B) : theme.colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 12)),
                                   const SizedBox(height: 4),
                                   Text('${businessController.currencySymbol}${(revenue - profit).toStringAsFixed(0)}', style: TextStyle(color: theme.colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 16)),
                                 ],
@@ -499,8 +548,17 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: theme.dividerColor),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: theme.brightness == Brightness.light ? const Color(0xFFE2E8F0) : theme.dividerColor,
+                        ),
+                        boxShadow: theme.brightness == Brightness.light ? [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ] : null,
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
@@ -551,30 +609,53 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
 
   Widget _buildQuickAction(BuildContext context, String title, IconData icon, Color color, VoidCallback onTap) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
     return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withValues(alpha: 0.2)),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: color, size: 28),
-              const SizedBox(height: 8),
-              Text(
-                title, 
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface, 
-                  fontWeight: FontWeight.bold, 
-                  fontSize: 14
-                )
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+            decoration: BoxDecoration(
+              color: isLight ? Colors.white : color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isLight ? const Color(0xFFE2E8F0) : color.withValues(alpha: 0.25),
+                width: 1,
               ),
-            ],
+              boxShadow: isLight ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ] : null,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isLight ? const Color(0xFFF1F5F9) : color.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(10),
+                    border: isLight ? Border.all(color: const Color(0xFFE2E8F0)) : null,
+                  ),
+                  child: Icon(icon, color: color, size: 22),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  title, 
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface, 
+                    fontWeight: FontWeight.bold, 
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -583,11 +664,21 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
 
   Widget _buildMetricCard(BuildContext context, String title, String value, IconData icon, Color iconColor) {
     final theme = Theme.of(context);
+    final isLight = theme.brightness == Brightness.light;
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.dividerColor),
+        border: Border.all(
+          color: isLight ? const Color(0xFFE2E8F0) : theme.dividerColor,
+        ),
+        boxShadow: isLight ? [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ] : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -597,13 +688,20 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
           children: [
             Row(
               children: [
-                Icon(icon, size: 16, color: iconColor),
-                const SizedBox(width: 6),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: isLight ? 0.12 : 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, size: 16, color: iconColor),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title, 
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7), 
+                      color: isLight ? const Color(0xFF64748B) : theme.colorScheme.onSurface.withValues(alpha: 0.7), 
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
@@ -624,7 +722,7 @@ class _DashboardHomeViewState extends State<_DashboardHomeView> {
                   fontSize: 24,
                   letterSpacing: -0.5,
                   color: theme.colorScheme.onSurface,
-                )
+                ),
               ),
             ),
           ],

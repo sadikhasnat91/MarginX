@@ -135,17 +135,52 @@ class ExpensesView extends StatelessWidget {
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         onPressed: () {
-                          Get.defaultDialog(
-                            title: 'Delete Expense',
-                            middleText: 'Are you sure you want to delete this expense?\nThis action cannot be undone.',
-                            textConfirm: 'Delete',
-                            textCancel: 'Cancel',
-                            confirmTextColor: Colors.white,
-                            buttonColor: Colors.red,
-                            onConfirm: () {
-                              Get.back();
-                              expenseController.deleteExpense(expense.id);
-                            },
+                          Get.dialog(
+                            AlertDialog(
+                              title: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.withValues(alpha: 0.1),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.delete_outline, color: Colors.red, size: 24),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  const Text('Delete Expense'),
+                                ],
+                              ),
+                              content: const Text(
+                                'Are you sure you want to delete this expense?\nThis action cannot be undone.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    backgroundColor: theme.brightness == Brightness.light ? const Color(0xFFF1F5F9) : Colors.white10,
+                                    foregroundColor: theme.brightness == Brightness.light ? const Color(0xFF475569) : Colors.white70,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      side: theme.brightness == Brightness.light ? const BorderSide(color: Color(0xFFE2E8F0)) : BorderSide.none,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                  ),
+                                  onPressed: () => Get.back(),
+                                  child: const Text('Cancel'),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    Get.back();
+                                    expenseController.deleteExpense(expense.id);
+                                  },
+                                  child: const Text('Delete'),
+                                ),
+                              ],
+                            ),
                           );
                         },
                       ),
