@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import '../controllers/auth_controller.dart';
 import 'signup_view.dart';
@@ -192,7 +193,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                 ],
-              ),
+              ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.06, end: 0, curve: Curves.easeOutCubic),
             ),
           ),
         ),
